@@ -1,5 +1,5 @@
 #include<bits/stdc++.h>
-using namespace std;\
+using namespace std;
 int currentSum = 0;
 int result[100];
 int cnt =0;
