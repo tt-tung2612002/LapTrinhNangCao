@@ -8,7 +8,6 @@ struct Point
     Point(){};
     Point(double *x_, double *y_)
     {
-        cout << x_ << endl;
         this->x = *x_;
         this->y = *y_;
     }
