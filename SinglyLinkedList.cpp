@@ -42,17 +42,24 @@ SinglyLinkedListNode *deleteNode(SinglyLinkedListNode *head, int position)
 	current->next = newNode;
 	return head;
 }
-bool detectCycle(SinglyLinkedListNode *head)
+SinglyLinkedListNode *detectCycle(SinglyLinkedListNode *head)
 {
-	SinglyLinkedListNode *fast = head, *slow = head;
+	SinglyLinkedListNode *fast = head, *slow = head, *entry = head;
 	while (fast && slow && fast->next)
 	{
 		slow = slow->next;
 		fast = fast->next->next;
 		if (slow == fast)
-			return true;
+		{
+			while (slow != entry)
+			{
+				slow = slow->next;
+				entry = entry->next;
+			}
+			return entry;
+		}
 	}
-	return false;
+	return nullptr;
 }
 SinglyLinkedListNode *buildSinglyLinkedList(int value)
 {
@@ -112,6 +119,19 @@ SinglyLinkedListNode *mergeTwoLists(SinglyLinkedListNode *l1, SinglyLinkedListNo
 	}
 	tail->next = l1 ? l1 : l2;
 	return dummy->next;
+}
+SinglyLinkedListNode *reversePair(SinglyLinkedListNode *head)
+{
+	if (!head)
+		return nullptr;
+	else if (!head->next)
+		return head;
+	SinglyLinkedListNode *temp = head->next;
+	head->next = temp->next;
+	temp->next = head;
+	head = temp;
+	head->next->next = reversePair(head->next->next);
+	return head;
 }
 SinglyLinkedListNode *deleteDuplicates(SinglyLinkedListNode *head)
 {
@@ -230,6 +250,7 @@ string Sum(string min, string max)
 	}
 	return str;
 }
+
 SinglyLinkedListNode *addTwoNumbers(SinglyLinkedListNode *l1, SinglyLinkedListNode *l2)
 {
 	l1 = reverseList(l1);
@@ -341,13 +362,58 @@ SinglyLinkedListNode *reverseBetween(SinglyLinkedListNode *head, int m, int n)
 	}
 	return dummy->next;
 }
+SinglyLinkedListNode *getKPlusOneNode(int K, SinglyLinkedListNode *head)
+{
+	SinglyLinkedListNode *Kth = head;
+	if (!head)
+		return head;
+	int i = 0;
+	for (i = 0; Kth && (i < K); i++, Kth = Kth->next)
+		;
+	if (i == K && Kth != nullptr)
+		return Kth;
+	return head->next;
+}
+bool hasKNodes(SinglyLinkedListNode *head, int K)
+{
+	int i = 0;
+	for (i = 0; head && (i < K); i++, head = head->next)
+		;
+	if (i == K)
+		return true;
+	return false;
+}
+SinglyLinkedListNode *reverseBlockOfKNodes(SinglyLinkedListNode *head, int K)
+{
+	SinglyLinkedListNode *current = head, *temp, *next, *newHead;
+	int i;
+	if (K == 0 || K == 1)
+		return head;
+	if (hasKNodes(current, K - 1))
+		newHead = getKPlusOneNode(K - 1, current);
+	else
+		newHead = head;
+	while (current && hasKNodes(current, K))
+	{
+		temp = getKPlusOneNode(K, current);
+		i = 0;
+		while (i < K)
+		{
+			next = current->next;
+			current->next = temp;
+			temp = current;
+			current = next;
+			i++;
+		}
+	}
+	return newHead;
+}
 int main()
 {
-	int a, b;
-	cin >> a;
-	SinglyLinkedListNode *l1 = buildSinglyLinkedList(a);
-	auto l2 = reverseBetween(l1,2,4);
-	cout << l2;
-
+	int n;
+	cin >> n;
+	auto head = buildSinglyLinkedList(n);
+	head = reverseBlockOfKNodes(head, 3);
+	cout << head;
 	system("pause");
 }
